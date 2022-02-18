@@ -22,16 +22,42 @@ def process_filters(filters_input):
     for filter in filters_input:
         type = request.args.get(filter + ".type")
         display_name = request.args.get(filter + ".displayName", filter)
+        key = request.args.get(filter + ".key")
         #
         # We need to capture and return what filters are already applied so they can be automatically added to any existing links we display in aggregations.jinja2
-        applied_filters += "&filter.name={}&{}.type={}&{}.displayName={}".format(filter, filter, type, filter,
-                                                                                 display_name)
+        applied_filters += "&filter.name={}&{}.type={}&{}.displayName={}&{}.key={}".format(filter, filter, type, filter,
+                                                                                 display_name, filter, key)
         #TODO: IMPLEMENT AND SET filters, display_filters and applied_filters.
         # filters get used in create_query below.  display_filters gets used by display_filters.jinja2 and applied_filters gets used by aggregations.jinja2 (and any other links that would execute a search.)
         if type == "range":
-            pass
-        elif type == "terms":
-            pass #TODO: IMPLEMENT
+            to_filter = request.args.get(filter + ".to") if request.args.get(filter + ".to") else None
+            from_filter = request.args.get(filter + ".from") if request.args.get(filter + ".from") else 0
+            if to_filter is None:
+                filters.append({
+                    "range": {
+                        filter: {
+                            "gte": from_filter
+                        }
+                    }
+                })
+            else:
+                filters.append({
+                    "range": {
+                        filter: {
+                            "lt": to_filter,
+                            "gte": from_filter
+                        }
+                    }
+                })
+            display_filters.append(f"Fetching all with {filter} in range from {from_filter} to {to_filter}")
+            applied_filters += f"&{filter}.to={to_filter}&{filter}.from={from_filter}"
+        elif type == "term":
+            filters.append({
+                "term": {
+                    filter: key
+                }
+            })
+            display_filters.append(f"Fetching all with {filter} as {key}")#TODO: IMPLEMENT
     print("Filters: {}".format(filters))
 
     return filters, display_filters, applied_filters
@@ -63,18 +89,16 @@ def query():
         query_obj = create_query(user_query, [], sort, sortDir)
     elif request.method == 'GET':  # Handle the case where there is no query or just loading the page
         user_query = request.args.get("query", "*")
-        filters_input = request.args.getlist("filter.name")
         sort = request.args.get("sort", sort)
         sortDir = request.args.get("sortDir", sortDir)
-        if filters_input:
-            (filters, display_filters, applied_filters) = process_filters(filters_input)
+    filters_input = request.args.getlist("filter.name")
+    if filters_input:
+        (filters, display_filters, applied_filters) = process_filters(filters_input)
 
-        query_obj = create_query(user_query, filters, sort, sortDir)
-    else:
-        query_obj = create_query("*", [], sort, sortDir)
+    query_obj = create_query(user_query, filters, sort, sortDir)
 
     print("query obj: {}".format(query_obj))
-    response = None   # TODO: Replace me with an appropriate call to OpenSearch
+    response = opensearch.search(index="bbuy_products",body=query_obj)   # TODO: Replace me with an appropriate call to OpenSearch
     # Postprocess results here if you so desire
 
     #print(response)
@@ -90,10 +114,90 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
     print("Query: {} Filters: {} Sort: {}".format(user_query, filters, sort))
     query_obj = {
         'size': 10,
+        "track_total_hits": True,
+        "sort": {
+            sort: sortDir
+        },
         "query": {
-            "match_all": {} # Replace me with a query that both searches and filters
+            "function_score": {
+                "query": {
+                    "bool": {
+                        "must": [
+                            {
+                                "simple_query_string": {
+                                    "fields": ["name^10", "description^5", "longDescription", "shortDescription^2", "tags", "features"],
+                                    "query": user_query
+                                }
+                            }
+                        ],
+                        "filter": filters
+                    }
+                },
+                "boost_mode": "multiply",
+                "score_mode": "avg",
+                "functions": [
+                    {
+                        "field_value_factor": {
+                            "field": "salesRankLongTerm",
+                            "missing": 100000000,
+                            "modifier": "reciprocal"
+                        }
+                    },
+                    {
+                        "field_value_factor": {
+                            "field": "salesRankMediumTerm",
+                            "missing": 100000000,
+                            "modifier": "reciprocal"
+                        }
+                    },
+                    {
+                        "field_value_factor": {
+                            "field": "salesRankShortTerm",
+                            "missing": 100000000,
+                            "modifier": "reciprocal"
+                        }
+                    }
+                ]
+            }
         },
         "aggs": {
+            "regularPrice": {
+                "range": { 
+                    "field": "regularPrice",
+                    "ranges": [
+                        {
+                            "to": "100",
+                            "key": "$"
+                        },
+                        {
+                            "to": "200",
+                            "from": "100",
+                            "key": "$$"
+                        },
+                        {
+                            "to": "300",
+                            "from": "200",
+                            "key": "$$$"
+                        },
+                        {
+                            "to": "400",
+                            "from": "300",
+                            "key": "$$$$"
+                        },
+                        {
+                            "from": "400",
+                            "key": "$$$$$"
+                        }
+                    ]
+                }
+            },
+            "missing_images": {
+                "missing": { "field": "image" }
+            }
+            ,
+            "department": {
+                "terms": { "field": "department" }
+            }
             #TODO: FILL ME IN
         }
     }

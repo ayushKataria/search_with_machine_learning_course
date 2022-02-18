@@ -1,5 +1,445 @@
 {
-  "settings": {
-    "index.refresh_interval": "5s"
-  }
+    "mappings": {
+        "properties": {
+            "sku": {
+                "type": "keyword"
+            },
+            "productId": {
+                "type": "keyword"
+            },
+            "name": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                },
+                "analyzer": "english"
+            },
+            "source": {
+                "type": "keyword"
+            },
+            "type": {
+                "type": "keyword"
+            },
+            "startDate": {
+                "type": "date",
+                "format": "date_optional_time"
+            },
+            "new": {
+                "type": "boolean"
+            },
+            "active": {
+                "type": "boolean"
+            },
+            "activeUpdateDate": {
+                "type": "date",
+                "format": "date_optional_time"
+            },
+            "regularPrice": {
+                "type": "double"
+            },
+            "salePrice": {
+                "type": "double"
+            },
+            "onSale": {
+                "type": "boolean"
+            },
+            "planPrice": {
+                "type": "double"
+            },
+            "priceWithPlan": {
+                "type": "keyword"
+            },
+            "advertisedPriceRestriction": {
+                "type": "boolean"
+            },
+            "minimumDisplayPrice": {
+                "type": "double"
+            },
+            "restrictedSalePrice": {
+                "type": "double"
+            },
+            "priceUpdateDate": {
+                "type": "date",
+                "format": "date_optional_time"
+            },
+            "digital": {
+                "type": "boolean"
+            },
+            "preowned": {
+                "type": "boolean"
+            },
+            "frequentlyPurchasedWith": {
+                "type": "keyword"
+            },
+            "accessories": {
+                "type": "keyword"
+            },
+            "relatedProducts": {
+                "type": "keyword"
+            },
+            "crossSell": {
+                "type": "keyword"
+            },
+            "salesRankShortTerm": {
+                "type": "long"
+            },
+            "salesRankMediumTerm": {
+                "type": "long"
+            },
+            "salesRankLongTerm": {
+                "type": "long"
+            },
+            "bestSellingRank": {
+                "type": "long"
+            },
+            "url": {
+                "type": "keyword"
+            },
+            "mobileUrl": {
+                "type": "keyword"
+            },
+            "addToCartUrl": {
+                "type": "keyword"
+            },
+            "categoryPath": {
+                "type": "keyword"
+            },
+            "categoryPathIds": {
+                "type": "keyword"
+            },
+            "categoryLeaf": {
+                "type": "keyword"
+            },
+            "categoryPathCount": {
+                "type": "keyword"
+            },
+            "customerReviewCount": {
+                "type": "long"
+            },
+            "customerReviewAverage": {
+                "type": "double"
+            },
+            "format": {
+                "type": "keyword"
+            },
+            "freeShipping": {
+                "type": "boolean"
+            },
+            "inStoreAvailability": {
+                "type": "boolean"
+            },
+            "inStoreAvailabilityText": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                },
+                "analyzer": "english"
+            },
+            "inStoreAvailabilityUpdateDate": {
+                "type": "date",
+                "format": "date_optional_time"
+            },
+            "itemUpdateDate": {
+                "type": "date",
+                "format": "date_optional_time"
+            },
+            "onlineAvailability": {
+                "type": "boolean"
+            },
+            "onlineAvailabilityText": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                },
+                "analyzer": "english"
+            },
+            "onlineAvailabilityUpdateDate": {
+                "type": "date",
+                "format": "date_optional_time"
+            },
+            "releaseDate": {
+                "type": "date",
+                "format": "date_optional_time"
+            },
+            "shippingCost": {
+                "type": "double"
+            },
+            "shipping": {
+                "type": "object",
+                "properties": {
+                    "ground": {
+                        "type": "double"
+                    },
+                    "secondDay": {
+                        "type": "double"
+                    },
+                    "nextDay": {
+                        "type": "double"
+                    },
+                    "vendorDelivery": {
+                        "type": "double"
+                    }
+                }
+            },
+            "specialOrder": {
+                "type": "boolean"
+            },
+            "shortDescription": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                },
+                "analyzer": "english"
+            },
+            "shortDescriptionHtml": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                },
+                "analyzer": "english"
+            },
+            "class": {
+                "type": "keyword"
+            },
+            "classId": {
+                "type": "keyword"
+            },
+            "subclass": {
+                "type": "keyword"
+            },
+            "subclassId": {
+                "type": "keyword"
+            },
+            "department": {
+                "type": "keyword"
+            },
+            "departmentId": {
+                "type": "keyword"
+            },
+            "bestBuyItemId": {
+                "type": "keyword"
+            },
+            "protectionPlans": {
+                "type": "nested",
+                "properties": {
+                    "sku": {
+                        "type": "keyword"
+                    },
+                    "name": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        },
+                        "analyzer": "english"
+                    },
+                    "productId": {
+                        "type": "keyword"
+                    },
+                    "type": {
+                        "type": "keyword"
+                    },
+                    "term": {
+                        "type": "keyword"
+                    },
+                    "regularPrice": {
+                        "type": "double"
+                    },
+                    "salePrice": {
+                        "type": "double"
+                    }
+                }
+            },
+            "description": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                },
+                "analyzer": "english"
+            },
+            "manufacturer": {
+                "type": "keyword"
+            },
+            "modelNumber": {
+                "type": "keyword"
+            },
+            "image": {
+                "type": "keyword"
+            },
+            "largeFrontImage": {
+                "type": "keyword"
+            },
+            "mediumImage": {
+                "type": "keyword"
+            },
+            "thumbnailImage": {
+                "type": "keyword"
+            },
+            "condition": {
+                "type": "keyword"
+            },
+            "inStorePickup": {
+                "type": "boolean"
+            },
+            "friendsAndFamilyPickup": {
+                "type": "boolean"
+            },
+            "homeDelivery": {
+                "type": "boolean"
+            },
+            "quantityLimit": {
+                "type": "integer"
+            },
+            "bundledIn": {
+                "type": "keyword"
+            },
+            "color": {
+                "type": "keyword"
+            },
+            "depth": {
+                "type": "keyword"
+            },
+            "dollarSavings": {
+                "type": "double"
+            },
+            "tradeInValue": {
+                "type": "double"
+            },
+            "height": {
+                "type": "keyword"
+            },
+            "orderable": {
+                "type": "keyword"
+            },
+            "weight": {
+                "type": "keyword"
+            },
+            "shippingWeight": {
+                "type": "keyword"
+            },
+            "width": {
+                "type": "keyword"
+            },
+            "warrantyLabor": {
+                "type": "keyword"
+            },
+            "warrantyParts": {
+                "type": "keyword"
+            },
+            "longDescription": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                },
+                "analyzer": "english"
+            },
+            "longDescriptionHtml": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                },
+                "analyzer": "english"
+            },
+            "details": {
+                "type": "nested",
+                "properties": {
+                    "name": {
+                        "type": "keyword"
+                    },
+                    "value": {
+                        "type": "keyword"
+                    }
+                }
+            },
+            "includedItemList": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                },
+                "analyzer": "english"
+            },
+            "features": {
+                "type": "text",
+                "fields": {
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                }
+            },
+            "offers": {
+                "type": "nested",
+                "properties": {
+                    "id": {
+                        "type": "keyword"
+                    },
+                    "heading": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        },
+                        "analyzer": "english"
+                    },
+                    "text": {
+                        "type": "text",
+                        "fields": {
+                            "keyword": {
+                                "type": "keyword"
+                            }
+                        },
+                        "analyzer": "english"
+                    },
+                    "url": {
+                        "type": "keyword"
+                    },
+                    "imageUrl": {
+                        "type": "keyword"
+                    },
+                    "type": {
+                        "type": "keyword"
+                    },
+                    "startDate": {
+                        "type": "date",
+                        "format": "date_optional_time"
+                    },
+                    "endDate": {
+                        "type": "date",
+                        "format": "date_optional_time"
+                    }
+                }
+            },
+            "marketplace": {
+                "type": "boolean"
+            },
+            "listingId": {
+                "type": "keyword"
+            },
+            "sellerId": {
+                "type": "keyword"
+            }
+        }
+    },
+    "settings": {
+        "index.refresh_interval": "5s"
+    }
 }

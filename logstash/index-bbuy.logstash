@@ -2,6 +2,11 @@ input {
   file {
     path => ["/workspace/datasets/product_data/products/*.xml"]  #Put in the path to the ungzipped/untarred product data.  To start smaller, simply select a smaller number of files or copy a few files to a different directory.
     start_position => "beginning"
+    mode => "read"
+    exit_after_read => true
+    sincedb_path => "/dev/null"
+    file_completed_action => "log"
+    file_completed_log_path => "/dev/null"
     codec => multiline {
             pattern => "<product>"
             negate => "true"
@@ -14,36 +19,58 @@ input {
         source => "message"
         target => "xml_doc"
         store_xml => "false"
+		force_array => "false"
         xpath => [ # NOTE: this is not a complete list of fields.  If you wish to add more, put in the appropriate XPath expression.
                   #TODO: is there a way to do this using XPath/XSL Functions so that we don't have to maintain a big list?
             "/product/productId/text()", "productId",
             "/product/sku/text()", "sku",
+			"/product/source/text()", "source",
+			"/product/specialOrder/text()", "specialOrder",
             "/product/name/text()", "name",
             "/product/type/text()", "type",
+			"/product/new/text()", "new",
             "/product/startDate/text()", "startDate",
             "/product/active/text()", "active",
+			"/product/activeUpdateDate/text()", "activeUpdateDate",
+			"/product/addToCartUrl/text()", "addToCartUrl",
+			"/product/advertisedPriceRestriction/text()", "advertisedPriceRestriction",
             "/product/regularPrice/text()", "regularPrice",
             "/product/salePrice/text()", "salePrice",
             "/product/onSale/text()", "onSale",
             "/product/digital/text()", "digital",
+			"/product/dollarSavings/text()", "dollarSavings",
             "/product/frequentlyPurchasedWith/*/text()", "frequentlyPurchasedWith",# Note the match all here to get the subfields
             "/product/accessories/*/text()", "accessories",# Note the match all here to get the subfields
             "/product/relatedProducts/*/text()", "relatedProducts",# Note the match all here to get the subfields
             "/product/crossSell/text()", "crossSell",
+			"/product/sellerId/text()", "sellerId",
             "/product/salesRankShortTerm/text()", "salesRankShortTerm",
             "/product/salesRankMediumTerm/text()", "salesRankMediumTerm",
             "/product/salesRankLongTerm/text()", "salesRankLongTerm",
             "/product/bestSellingRank/text()", "bestSellingRank",
             "/product/url/text()", "url",
+			"/product/warrantyLabor/text()", "warrantyLabor",
+			"/product/warrantyParts/text()", "warrantyParts",
             "/product/categoryPath/*/name/text()", "categoryPath", # Note the match all here to get the subfields
             "/product/categoryPath/*/id/text()", "categoryPathIds", # Note the match all here to get the subfields
             "/product/categoryPath/category[last()]/id/text()", "categoryLeaf",
             "count(/product/categoryPath/*/name)", "categoryPathCount",
+			"/product/bundledIn/*/text()", "bundledIn", # Note the match all here to get the subfields
             "/product/customerReviewCount/text()", "customerReviewCount",
             "/product/customerReviewAverage/text()", "customerReviewAverage",
             "/product/inStoreAvailability/text()", "inStoreAvailability",
+			"/product/inStoreAvailabilityText/text()", "inStoreAvailabilityText",
+			"/product/inStoreAvailabilityUpdateDate/text()", "inStoreAvailabilityUpdateDate",
             "/product/onlineAvailability/text()", "onlineAvailability",
+			"/product/onlineAvailabilityText/text()", "onlineAvailabilityText",
+			"/product/onlineAvailabilityUpdateDate/text()", "onlineAvailabilityUpdateDate",
+			"/product/orderable/text()", "orderable",
+			"/product/planPrice/text()", "planPrice",
             "/product/releaseDate/text()", "releaseDate",
+			"/product/restrictedSalePrice/text()", "restrictedSalePrice",
+			"/product/preowned/text()", "preowned",
+			"/product/priceUpdateDate/text()", "priceUpdateDate",
+			"/product/priceWithPlan/text()", "priceWithPlan",
             "/product/shippingCost/text()", "shippingCost",
             "/product/shortDescription/text()", "shortDescription",
             "/product/shortDescriptionHtml/text()", "shortDescriptionHtml",
@@ -51,18 +78,49 @@ input {
             "/product/classId/text()", "classId",
             "/product/subclass/text()", "subclass",
             "/product/subclassId/text()", "subclassId",
+			"/product/mediumImage/text()", "mediumImage",
+			"/product/thumbnailImage/text()", "thumbnailImage",
+			"/product/tradeInValue/text()", "tradeInValue",
+			"/product/minimumDisplayPrice/text()", "minimumDisplayPrice",
+			"/product/mobileUrl/text()", "mobileUrl",
             "/product/department/text()", "department",
             "/product/departmentId/text()", "departmentId",
             "/product/bestBuyItemId/text()", "bestBuyItemId",
             "/product/description/text()", "description",
+			"/product/details/*/name/text()", "[details][name]",
+			"/product/details/*/value/text()", "[details][value]",
+			"/product/offers/*/endDate/text()", "[offers][endDate]",
+			"/product/offers/*/heading/text()", "[offers][heading]",
+			"/product/offers/*/id/text()", "[offers][id]",
+			"/product/offers/*/imageUrl/text()", "[offers][imageUrl]",
+			"/product/offers/*/startDate/text()", "[offers][startDate]",
+			"/product/offers/*/text/text()", "[offers][text]",
+			"/product/offers/*/type/text()", "[offers][type]",
+			"/product/offers/*/url/text()", "[offers][url]",
+			"/product/protectionPlans/*/name/text()", "[protectionPlans][name]",
+			"/product/protectionPlans/*/productId/text()", "[protectionPlans][productId]",
+			"/product/protectionPlans/*/regularPrice/text()", "[protectionPlans][regularPrice]",
+			"/product/protectionPlans/*/salePrice/text()", "[protectionPlans][salePrice]",
+			"/product/protectionPlans/*/sku/text()", "[protectionPlans][sku]",
+			"/product/protectionPlans/*/term/text()", "[protectionPlans][term]",
+			"/product/protectionPlans/*/type/text()", "[protectionPlans][type]",
+			"/product/shipping/*/ground/text()", "[shipping][ground]",
+			"/product/shipping/*/nextDay/text()", "[shipping][nextDay]",
+			"/product/shipping/*/secondDay/text()", "[shipping][secondDay]",
+			"/product/shipping/*/vendorDelivery/text()", "[shipping][vendorDelivery]",
             "/product/manufacturer/text()", "manufacturer",
+			"/product/marketplace/text()", "marketplace",
             "/product/modelNumber/text()", "modelNumber",
             "/product/image/text()", "image",
             "/product/condition/text()", "condition",
             "/product/inStorePickup/text()", "inStorePickup",
+			"/product/includedItemList/*/text()", "includedItemList",
             "/product/homeDelivery/text()", "homeDelivery",
+			"/product/largeFrontImage/text()", "largeFrontImage",
+			"/product/listingId/text()", "listingId",
             "/product/quantityLimit/text()", "quantityLimit",
             "/product/color/text()", "color",
+			"/product/itemUpdateDate/text()", "itemUpdateDate",
             "/product/depth/text()", "depth",
             "/product/height/text()", "height",
             "/product/weight/text()", "weight",
@@ -70,6 +128,9 @@ input {
             "/product/width/text()", "width",
             "/product/longDescription/text()", "longDescription",
             "/product/longDescriptionHtml/text()", "longDescriptionHtml",
+			"/product/format/text()", "format",
+			"/product/freeShipping/text()", "freeShipping",
+			"/product/friendsAndFamilyPickup/text()", "friendsAndFamilyPickup",
             "/product/features/*/text()", "features" # Note the match all here to get the subfields
 
         ]
