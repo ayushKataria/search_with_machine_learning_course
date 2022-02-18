@@ -76,6 +76,8 @@ def query():
     filters = None
     sort = "_score"
     sortDir = "desc"
+    pageNo = int(request.args.get("pageNo")) if request.args.get("pageNo") else 0
+    pageSize = int(request.args.get("pageSize")) if request.args.get("pageSize") else 10
     if request.method == 'POST':  # a query has been submitted
         user_query = request.form['query']
         if not user_query:
@@ -95,25 +97,25 @@ def query():
     if filters_input:
         (filters, display_filters, applied_filters) = process_filters(filters_input)
 
-    query_obj = create_query(user_query, filters, sort, sortDir)
+    query_obj = create_query(user_query, filters, sort, sortDir, pageSize, pageNo)
 
     print("query obj: {}".format(query_obj))
-    response = opensearch.search(index="bbuy_products",body=query_obj)   # TODO: Replace me with an appropriate call to OpenSearch
+    response = opensearch.search(index="bbuy_products",body=query_obj)
     # Postprocess results here if you so desire
 
     #print(response)
     if error is None:
         return render_template("search_results.jinja2", query=user_query, search_response=response,
                                display_filters=display_filters, applied_filters=applied_filters,
-                               sort=sort, sortDir=sortDir)
+                               sort=sort, sortDir=sortDir, pageNo=pageNo, pageSize=pageSize)
     else:
         redirect(url_for("index"))
 
-
-def create_query(user_query, filters, sort="_score", sortDir="desc"):
+def create_query(user_query, filters, sort="_score", sortDir="desc", pageSize = 10, pageNo = 0):
     print("Query: {} Filters: {} Sort: {}".format(user_query, filters, sort))
     query_obj = {
-        'size': 10,
+        'size': pageSize,
+        "from": pageSize * pageNo,
         "track_total_hits": True,
         "sort": {
             sort: sortDir
