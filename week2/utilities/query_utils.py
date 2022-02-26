@@ -18,7 +18,7 @@ def create_prior_queries_from_group(click_group): # total impressions isn't curr
     if click_group is not None:
         for item in click_group.itertuples():
             try:
-                click_prior_query += "%s^%.3f  " % (item.doc_id, item.clicks)
+                click_prior_query += "%s^%.3f  " % (item.doc_id, item.clicks / item.num_impressions)
 
             except KeyError as ke:
                 pass # nothing to do in this case, it just means we can't find priors for this doc
@@ -32,7 +32,7 @@ def create_prior_queries(doc_ids, doc_id_weights, query_times_seen): # total imp
     if doc_ids is not None and doc_id_weights is not None:
         for idx, doc in enumerate(doc_ids):
             try:
-                wgt = doc_id_weights[doc]  # This should be the number of clicks or whatever
+                wgt = doc_id_weights[doc] / query_times_seen # This should be the number of clicks or whatever
                 click_prior_query += "%s^%.3f  " % (doc, wgt)
             except KeyError as ke:
                 pass # nothing to do in this case, it just means we can't find priors for this doc

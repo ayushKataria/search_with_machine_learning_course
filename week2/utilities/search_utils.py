@@ -122,7 +122,7 @@ def __judge_hits(all_skus_for_query, index, key, no_results, opensearch, query_o
             limit = len(hits)
             for i in range(limit):
                 hit = hits[i]
-                sku = int(hit['_source']['sku'][0])
+                sku = int(hit['_source']['sku'])
                 results["query"].append(key)
                 results["type"].append(query_type)
                 results["new"].append(seen)
