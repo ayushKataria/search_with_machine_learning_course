@@ -7,7 +7,6 @@ def create_rescore_ltr_query(user_query, query_obj, click_prior_query, ltr_model
                              active_features=None, rescore_size=500, main_query_weight=1, rescore_query_weight=2):
     # Create the base query, use a much bigger window
     #add on the rescore
-    # print("IMPLEMENT ME: create_rescore_ltr_query")
     query_obj["rescore"] = {
         "window_size": rescore_size,
         "query": {
@@ -67,7 +66,6 @@ def create_sltr_hand_tuned_query(user_query, query_obj, click_prior_query, ltr_m
     return query_obj, len(query_obj["query"]["function_score"]["query"]["bool"]["should"])
 
 def create_feature_log_query(query, doc_ids, click_prior_query, featureset_name, ltr_store_name, size=200, terms_field="_id"):
-    # print("IMPLEMENT ME: create_feature_log_query")
     feature_log_query = {
         "size": size,
         "query": {
