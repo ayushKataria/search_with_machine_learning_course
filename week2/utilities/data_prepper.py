@@ -141,7 +141,7 @@ class DataPrepper:
                     # we have a response with some hits
                     hits = response['hits']['hits']
                     # print(hits)
-                    skus_for_query = prior_clicks_for_query.sku.drop_duplicates()  # we are comparing skus later, so grab the Series now
+                    skus_for_query = prior_clicks_for_query[["sku","query","clicks","num_impressions"]][prior_clicks_for_query["query"] == key].drop_duplicates()  # we are comparing skus later, so grab the Series now
 
                     total_clicked_docs_per_query = 0
                     for (idx, hit) in enumerate(hits):
@@ -154,7 +154,7 @@ class DataPrepper:
                         num_clicks = self.__num_clicks(skus_for_query, sku)
                         if num_clicks > 0:
                             total_clicked_docs_per_query += 1
-                        num_impressions.append(query_times_seen)
+                        num_impressions.append(skus_for_query[skus_for_query["sku"] == sku]["num_impressions"].sum())
                         clicks.append(num_clicks)
                         if hit['_source'].get('name') is not None:
                             product_names.append(hit['_source']['name'])
@@ -181,10 +181,6 @@ class DataPrepper:
             "num_impressions": num_impressions,
             "product_name": product_names
         })
-        print(impressions_df)
-        impressions_df =  impressions_df.groupby(["sku", "query_id"], as_index=False).aggregate({"clicks": "sum"}).reindex(columns=impressions_df.columns)
-        print(impressions_df)
-        # remove low click/impressions,
         #remove low click/impressions
         impressions_df = impressions_df[(impressions_df['num_impressions'] >= min_impressions) & (impressions_df['clicks'] >= min_clicks)]
         print("After removing low clicks")
@@ -312,13 +308,4 @@ class DataPrepper:
 
     # Determine the number of clicks for this sku given a query (represented by the click group)
     def __num_clicks(self, all_skus_for_query, test_sku):
-        count = 0
-        # print("test1")
-        # # print(all_skus_for_query)
-        # print(all_skus_for_query.value_counts())
-        # print("test2")
-        for sku in all_skus_for_query:
-            if sku == test_sku:
-                count = count + 1
-        # print(count)
-        return count
+        return all_skus_for_query[all_skus_for_query["sku"] == test_sku]["clicks"].sum()
