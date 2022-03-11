@@ -4,10 +4,10 @@ usage()
   exit 2
 }
 
-PRODUCTS_JSON_FILE="/workspace/search_with_machine_learning_course/opensearch/bbuy_products.json"
-QUERIES_JSON_FILE="/workspace/search_with_machine_learning_course/opensearch/bbuy_queries.json"
+PRODUCTS_JSON_FILE="/workspace/search_with_machine_learning_course/week4/conf/bbuy_products.json"
+QUERIES_JSON_FILE="/workspace/search_with_machine_learning_course/week4/conf/bbuy_queries.json"
 
-PRODUCTS_LOGSTASH_FILE="/workspace/search_with_machine_learning_course/logstash/index-bbuy.logstash"
+PRODUCTS_LOGSTASH_FILE="/workspace/search_with_machine_learning_course/week4/conf/index-bbuy-http-filter.logstash"
 QUERIES_LOGSTASH_FILE="/workspace/search_with_machine_learning_course/logstash/index-bbuy-queries.logstash"
 
 LOGSTASH_HOME="/workspace/logstash/logstash-7.13.2"

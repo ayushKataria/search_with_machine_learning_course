@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 import numpy as np
 import csv
+import re
 
 # Useful if you want to perform stemming.
 import nltk
@@ -49,8 +50,22 @@ df = pd.read_csv(queries_file_name)[['category', 'query']]
 df = df[df['category'].isin(categories)]
 
 # IMPLEMENT ME: Convert queries to lowercase, and optionally implement other normalization, like stemming.
+df['query'] = df['query'].apply(lambda x: " ".join([stemmer.stem(w) for w in re.sub("[^0-9a-zA-Z]+", " ", x).lower().split()]))
+
+print(df)
 
 # IMPLEMENT ME: Roll up categories to ancestors to satisfy the minimum number of queries per category.
+# df["category"] =  df["category"].apply(lambda x: parents_df.query(f'category=="{x}"')["parent"].values[0] if df.category.value_counts()[x] < min_queries else x)
+category_counts = df.category.value_counts()
+category_counts = category_counts[category_counts < min_queries]
+while len(category_counts):
+    for category in category_counts.iteritems():
+        if category[0] != root_category_id:
+            df.replace({category[0]: parents_df.query(f'category=="{category[0]}"')["parent"].values[0]}, inplace=True)
+    category_counts = df.category.value_counts()
+    category_counts = category_counts[category_counts < min_queries]
+
+print(len(df.category.value_counts()))
 
 # Create labels in fastText format.
 df['label'] = '__label__' + df['category']

@@ -1,0 +1,62 @@
+### Level 1
+- ```min_queries 100```
+    - Unique categories: **867**
+    - **v1** - default fasttext parameters 
+        - **P@1: 0.467**
+        - **R@1: 0.467**
+        - **R@3: 0.617**
+        - **R@5: 0.677**
+    - **v2** - epoch 25
+        - **P@1: 0.526**
+        - **R@1: 0.526**
+        - **R@3: 0.701**
+        - **R@5: 0.766**
+    - **v3** - epoch 25, lr 0.4
+        - **P@1: 0.524**
+        - **R@1: 0.524**
+        - **R@3: 0.7**
+        - **R@5: 0.765**
+    - **v4** - epoch 25, lr 0.4, wordNgrams 2
+        - **P@1: 0.522**
+        - **R@1: 0.522**
+        - **R@3: 0.704**
+        - **R@5: 0.768**
+
+- ```min_queries 1000```
+    - Unique categories: **375**
+    - **v1** - default fasttext parameters 
+        - **P@1: 0.483**
+        - **R@1: 0.483**
+        - **R@3: 0.65**
+        - **R@5: 0.715**
+    - **v2** - epoch 25
+        - **P@1: 0.533**
+        - **R@1: 0.533**
+        - **R@3: 0.715**
+        - **R@5: 0.777**
+    - **v3** - epoch 25, lr 0.4
+        - **P@1: 0.528**
+        - **R@1: 0.528**
+        - **R@3: 0.712**
+        - **R@5: 0.774**
+    - **v4** - epoch 25, lr 0.4, wordNgrams 2
+        - **P@1: 0.528**
+        - **R@1: 0.528**
+        - **R@3: 0.711**
+        - **R@5: 0.778**
+
+### Level 2
+- Improved Queries
+    - Query **xbox**:
+        - Predicted categories: ['abcat0701001']
+        - Got actual xbox 360 rather than xbox games on top
+    - Query **macbook**
+        - Predicted categories: ['pcmcat247400050001']
+        - Got macbooks rather than macbook cases
+- Problematic Queries
+    - Query **kitchen**:
+        - Predicted categories: ['pcmcat209000050008', 'cat02015']
+        - Music with title kitchen is returned with top category having no data.
+    - Query **radio**:
+        - Predicted categories: ['abcat0302013', 'abcat0206001', 'cat02015', 'abcat0206000', 'pcmcat248700050021'] 
+        - Radio devices were ranked lower since the model did not return their category with a high confidence. The CD/DVDs with radio in their name is returned in the higher positions.

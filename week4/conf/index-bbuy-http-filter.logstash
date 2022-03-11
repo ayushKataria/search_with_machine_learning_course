@@ -7,8 +7,8 @@ input {
             negate => "true"
             what => "previous"
         }
-    #mode => "read"
-    #exit_after_read => "true"
+    mode => "read"
+    exit_after_read => "true"
   }
 }
   filter {
